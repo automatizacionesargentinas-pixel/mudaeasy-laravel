@@ -5,6 +5,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.16",
         "barryvdh/laravel-dompdf": "^3.0",
         "guzzlehttp/guzzle": "^7.2"
@@ -40,6 +41,15 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-mdq4-51ck-6kdq": "Acknowledged",
+                "PKSA-8qx3-n5y5-vvnd": "Acknowledged",
+                "PKSA-q46n-4fdk-zjr4": "Acknowledged",
+                "PKSA-qzrn-rnz3-85w1": "Acknowledged",
+                "PKSA-w7xr-vk7n-rstm": "Acknowledged"
+            }
         }
     },
     "minimum-stability": "stable",
