@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -19,8 +20,10 @@ class AuthController extends Controller
         return response()->json(['url' => $url]);
     }
 
-    public function callback(Request $request): JsonResponse
+    public function callback(Request $request): RedirectResponse
     {
+        $frontendUrl = env('FRONTEND_URL', 'https://mudaeasy-laravel.vercel.app');
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
@@ -35,12 +38,11 @@ class AuthController extends Controller
 
             $token = $user->createToken('mudaeasy')->plainTextToken;
 
-            return response()->json([
-                'token' => $token,
-                'user'  => $user,
-            ]);
+            // Redirect to frontend with token in URL (SPA picks it up)
+            return redirect("{$frontendUrl}?token={$token}");
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Auth failed: ' . $e->getMessage()], 401);
+            return redirect("{$frontendUrl}?error=" . urlencode($e->getMessage()));
         }
     }
 
