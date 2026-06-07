@@ -1,15 +1,16 @@
 [phases.setup]
-nixPkgs = ['php82', 'php82Extensions.pdo', 'php82Extensions.pdo_mysql', 'php82Extensions.mbstring', 'php82Extensions.xml', 'php82Extensions.curl', 'php82Extensions.gd', 'php82Extensions.zip', 'php82Extensions.tokenizer', 'php82Extensions.openssl', 'composer', 'nodejs_20', 'npm']
+nixPkgs = ['php82', 'php82Extensions.pdo', 'php82Extensions.pdo_mysql', 'php82Extensions.mbstring', 'php82Extensions.xml', 'php82Extensions.curl', 'php82Extensions.gd', 'php82Extensions.zip', 'php82Extensions.tokenizer', 'php82Extensions.openssl', 'composer']
 
 [phases.install]
 cmds = [
-  'COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --ignore-platform-reqs'
+  'COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --ignore-platform-reqs'
 ]
 
 [phases.build]
 cmds = [
-  'php artisan config:cache || true',
-  'php artisan route:cache || true'
+  'php artisan package:discover --ansi',
+  'php artisan config:cache',
+  'php artisan route:cache'
 ]
 
 [start]
