@@ -10,10 +10,8 @@ cmds = [
 cmds = [
   'mkdir -p bootstrap/cache storage/framework/sessions storage/framework/views storage/framework/cache storage/logs storage/app/public',
   'chmod -R 775 storage bootstrap/cache',
-  'php artisan package:discover --ansi',
-  'php artisan config:cache',
-  'php artisan route:cache'
+  'php artisan package:discover --ansi'
 ]
 
 [start]
-cmd = 'chmod -R 775 storage bootstrap/cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
+cmd = 'chmod -R 775 storage bootstrap/cache && php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
