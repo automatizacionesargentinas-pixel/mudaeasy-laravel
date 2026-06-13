@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\CompanyController;
 
+// Health check
+Route::get('/health', fn() => response()->json(['status' => 'ok', 'app' => 'MudaEasy']));
+
 // Auth
 Route::get('/auth/google', [AuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [AuthController::class, 'callback']);
