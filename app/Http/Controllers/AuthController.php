@@ -10,14 +10,10 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    public function redirect(): JsonResponse
+    public function redirect(): RedirectResponse
     {
-        $url = Socialite::driver('google')
-            ->stateless()
-            ->redirect()
-            ->getTargetUrl();
-
-        return response()->json(['url' => $url]);
+        $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+        return redirect($url);
     }
 
     public function callback(Request $request): RedirectResponse
