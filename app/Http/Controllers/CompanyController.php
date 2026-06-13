@@ -10,7 +10,13 @@ class CompanyController extends Controller
 {
     public function index(): JsonResponse
     {
-        $companies = Company::with('user')->get();
+        // No se incluye 'user' completo para no exponer google_id, emails, etc.
+        $companies = Company::select([
+            'id', 'name', 'description',
+            'latitude', 'longitude',
+            'price_per_m3', 'price_per_km', 'min_time_price',
+            'currency', 'rating', 'is_verified',
+        ])->get();
         return response()->json($companies);
     }
 
@@ -44,7 +50,17 @@ class CompanyController extends Controller
     public function update(Request $request, Company $company): JsonResponse
     {
         abort_if($company->user_id !== $request->user()->id, 403);
-        $company->update($request->all());
+        $data = $request->validate([
+            'name'           => 'sometimes|string|max:255',
+            'description'    => 'nullable|string',
+            'latitude'       => 'nullable|numeric',
+            'longitude'      => 'nullable|numeric',
+            'price_per_m3'   => 'sometimes|numeric|min:0',
+            'price_per_km'   => 'sometimes|numeric|min:0',
+            'min_time_price' => 'sometimes|numeric|min:0',
+            'currency'       => 'sometimes|in:ARS,EUR,USD',
+        ]);
+        $company->update($data);
         return response()->json($company);
     }
 }

@@ -54,27 +54,49 @@ class QuoteController extends Controller
 
     public function show(Request $request, Quote $quote): JsonResponse
     {
-        $this->authorize($request->user(), $quote);
+        $this->authorizeQuote($request->user(), $quote);
         return response()->json($quote->load('company'));
     }
 
     public function update(Request $request, Quote $quote): JsonResponse
     {
-        $this->authorize($request->user(), $quote);
-        $quote->update($request->all());
+        $this->authorizeQuote($request->user(), $quote);
+        $data = $request->validate([
+            'client_name'              => 'sometimes|string|max:255',
+            'phone'                    => 'sometimes|string|max:50',
+            'email'                    => 'sometimes|email',
+            'origin_address'           => 'sometimes|string',
+            'destination_address'      => 'sometimes|string',
+            'move_date'                => 'sometimes|date',
+            'origin_housing_type'      => 'sometimes|string',
+            'destination_housing_type' => 'sometimes|string',
+            'origin_floor'             => 'sometimes|integer|min:0',
+            'destination_floor'        => 'sometimes|integer|min:0',
+            'distance_km'              => 'sometimes|numeric|min:0',
+            'charge_by_distance'       => 'sometimes|boolean',
+            'charge_by_min_time'       => 'sometimes|boolean',
+            'inventory'                => 'sometimes|array',
+            'services'                 => 'sometimes|array',
+            'signature'                => 'nullable|string',
+            'status'                   => 'sometimes|in:Borrador,Enviado,Aceptado',
+            'total_volume'             => 'sometimes|numeric|min:0',
+            'total_price'              => 'sometimes|numeric|min:0',
+            'currency'                 => 'sometimes|in:ARS,EUR,USD',
+        ]);
+        $quote->update($data);
         return response()->json($quote);
     }
 
     public function destroy(Request $request, Quote $quote): JsonResponse
     {
-        $this->authorize($request->user(), $quote);
+        $this->authorizeQuote($request->user(), $quote);
         $quote->delete();
         return response()->json(['ok' => true]);
     }
 
     public function pdf(Request $request, Quote $quote): Response
     {
-        $this->authorize($request->user(), $quote);
+        $this->authorizeQuote($request->user(), $quote);
 
         $inventoryItems = config('mudaeasy.inventory_items');
         $additionalServices = config('mudaeasy.additional_services');
@@ -86,7 +108,7 @@ class QuoteController extends Controller
         return $pdf->download("Presupuesto_{$quote->client_name}.pdf");
     }
 
-    private function authorize(object $user, Quote $quote): void
+    private function authorizeQuote(object $user, Quote $quote): void
     {
         abort_if($quote->user_id !== $user->id, 403, 'Unauthorized');
     }

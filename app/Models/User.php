@@ -13,6 +13,8 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email', 'google_id', 'avatar', 'role'];
 
+    protected $hidden = ['google_id'];
+
     public function quotes(): HasMany { return $this->hasMany(Quote::class); }
     public function company(): HasOne  { return $this->hasOne(Company::class); }
     public function isCompany(): bool  { return $this->role === 'company'; }

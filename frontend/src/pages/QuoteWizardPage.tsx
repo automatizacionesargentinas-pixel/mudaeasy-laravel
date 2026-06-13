@@ -49,14 +49,28 @@ const STEPS = [
   { label: 'Resumen',    icon: FileText },
 ];
 
+type FormState = {
+  clientName: string; phone: string; email: string;
+  originAddress: string; destinationAddress: string;
+  moveDate: string;
+  originHousingType: string; destinationHousingType: string;
+  originFloor: number; destinationFloor: number;
+  distanceKm: number; chargeByDistance: boolean; chargeByMinTime: boolean;
+  inventory: { itemId: string; quantity: number; customVolume?: number }[];
+  services: string[];
+  currency: string;
+  signature: string;
+};
+
 export default function QuoteWizardPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sigPadRef = useRef<SignaturePad | null>(null);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormState>({
     clientName: '', phone: '', email: '',
     originAddress: '', destinationAddress: '',
     moveDate: '',
@@ -75,7 +89,8 @@ export default function QuoteWizardPage() {
     }
   }, [step]);
 
-  const set = (key: string, val: any) => setForm(f => ({ ...f, [key]: val }));
+  const set = <K extends keyof FormState>(key: K, val: FormState[K]) =>
+    setForm(f => ({ ...f, [key]: val }));
 
   const changeQty = (itemId: string, delta: number) => {
     setForm(f => {
@@ -100,6 +115,7 @@ export default function QuoteWizardPage() {
 
   const save = async (status = 'Borrador') => {
     setSaving(true);
+    setSaveError('');
     const sig = sigPadRef.current && !sigPadRef.current.isEmpty() ? sigPadRef.current.toDataURL() : '';
     try {
       await api.post('/quotes', {
@@ -114,6 +130,10 @@ export default function QuoteWizardPage() {
         total_volume: vol, total_price: price, currency: form.currency,
       });
       navigate('/');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Error al guardar';
+      setSaveError('No se pudo guardar el presupuesto. Verificá tu conexión e intentá de nuevo.');
+      console.error('save error:', msg);
     } finally {
       setSaving(false);
     }
@@ -153,6 +173,9 @@ export default function QuoteWizardPage() {
 
       {/* Bottom actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-zinc-950/95 backdrop-blur px-5 py-4 border-t border-zinc-900 space-y-2">
+        {saveError && (
+          <p className="text-red-400 text-xs text-center pb-1">{saveError}</p>
+        )}
         {step === 3 ? (
           <div className="flex gap-2">
             <button onClick={() => save('Borrador')} disabled={saving}

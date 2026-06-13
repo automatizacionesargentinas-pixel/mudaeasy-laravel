@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();
+        // Token-based auth via Bearer header — no stateful session needed
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

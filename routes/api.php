@@ -24,9 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/quotes/{quote}', [QuoteController::class, 'destroy']);
     Route::get('/quotes/{quote}/pdf', [QuoteController::class, 'pdf']);
 
-    // Companies
+    // Companies — mine va antes del parámetro para evitar conflictos de routing
     Route::get('/companies', [CompanyController::class, 'index']);
     Route::post('/companies', [CompanyController::class, 'store']);
-    Route::put('/companies/{company}', [CompanyController::class, 'update']);
     Route::get('/companies/mine', [CompanyController::class, 'mine']);
+    Route::put('/companies/{company}', [CompanyController::class, 'update']);
 });

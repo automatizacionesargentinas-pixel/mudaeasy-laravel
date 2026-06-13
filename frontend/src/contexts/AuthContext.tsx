@@ -26,6 +26,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // OAuth callback: el backend redirige con ?token= en la URL
+    const params = new URLSearchParams(window.location.search);
+    const cbToken = params.get('token');
+    const errorParam = params.get('error');
+
+    if (cbToken) {
+      // Limpiar la URL antes de cualquier otra cosa
+      localStorage.setItem('token', cbToken);
+      window.history.replaceState({}, '', '/');
+      api.get('/auth/me')
+        .then(r => setUser(r.data))
+        .catch(() => localStorage.removeItem('token'))
+        .finally(() => setLoading(false));
+      return; // no ejecutar la rama de token guardado simultáneamente
+    }
+
+    if (errorParam) {
+      window.history.replaceState({}, '', '/');
+      setLoading(false);
+      return;
+    }
+
+    // Token guardado de sesiones anteriores
     const token = localStorage.getItem('token');
     if (token) {
       api.get('/auth/me')
@@ -34,15 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
-    }
-
-    // Handle OAuth callback token in URL
-    const params = new URLSearchParams(window.location.search);
-    const cbToken = params.get('token');
-    if (cbToken) {
-      localStorage.setItem('token', cbToken);
-      window.history.replaceState({}, '', '/');
-      api.get('/auth/me').then(r => { setUser(r.data); setLoading(false); });
     }
   }, []);
 
