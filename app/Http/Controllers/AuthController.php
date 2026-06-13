@@ -10,10 +10,22 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    public function redirect(): RedirectResponse
+    public function redirect(): mixed
     {
-        $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
-        return redirect($url);
+        try {
+            $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+            return redirect($url);
+        } catch (\Throwable $e) {
+            // DEBUG TEMPORAL — se elimina después de identificar el error
+            return response()->json([
+                'error'                => $e->getMessage(),
+                'class'                => get_class($e),
+                'file'                 => basename($e->getFile()),
+                'line'                 => $e->getLine(),
+                'google_client_id_set' => !empty(env('GOOGLE_CLIENT_ID')),
+                'google_redirect_set'  => !empty(env('GOOGLE_REDIRECT_URL')),
+            ], 500);
+        }
     }
 
     public function callback(Request $request): RedirectResponse
