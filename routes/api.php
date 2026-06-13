@@ -10,9 +10,12 @@ Route::get('/health', fn() => response()->json(['status' => 'ok', 'app' => 'Muda
 
 // DEBUG TEMPORAL
 Route::get('/debug-config', fn() => response()->json([
-    'google_redirect'   => config('services.google.redirect'),
-    'google_client_id'  => substr(config('services.google.client_id') ?? '', 0, 20) . '...',
-    'app_url'           => config('app.url'),
+    'env_GOOGLE_CLIENT_ID'    => substr(getenv('GOOGLE_CLIENT_ID') ?: '', 0, 15) . '...',
+    'env_APP_URL'             => getenv('APP_URL'),
+    'env_DB_HOST'             => getenv('DB_HOST') ? 'set' : 'empty',
+    'config_google_client_id' => substr(config('services.google.client_id') ?? '', 0, 15) . '...',
+    'config_app_url'          => config('app.url'),
+    'dotenv_loaded'           => file_exists(base_path('.env')),
 ]));
 
 
