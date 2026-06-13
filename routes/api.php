@@ -8,29 +8,6 @@ use App\Http\Controllers\CompanyController;
 // Health check
 Route::get('/health', fn() => response()->json(['status' => 'ok', 'app' => 'MudaEasy']));
 
-// DEBUG TEMPORAL — testea Socialite sin pasar por el controller
-Route::get('/debug-socialite', function () {
-    try {
-        $cfg = config('services.google');
-        $url = \Laravel\Socialite\Facades\Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
-        return response()->json([
-            'ok'            => true,
-            'url_preview'   => substr($url, 0, 60) . '...',
-            'client_id_set' => !empty($cfg['client_id']),
-            'secret_set'    => !empty($cfg['client_secret']),
-            'redirect'      => $cfg['redirect'] ?? null,
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'ok'            => false,
-            'error'         => $e->getMessage(),
-            'class'         => get_class($e),
-            'client_id_set' => !empty(env('GOOGLE_CLIENT_ID')),
-            'secret_set'    => !empty(env('GOOGLE_CLIENT_SECRET')),
-            'redirect'      => env('GOOGLE_REDIRECT_URL'),
-        ]);
-    }
-});
 
 // Auth
 Route::get('/auth/google', [AuthController::class, 'redirect']);
