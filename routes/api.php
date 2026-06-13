@@ -8,6 +8,13 @@ use App\Http\Controllers\CompanyController;
 // Health check
 Route::get('/health', fn() => response()->json(['status' => 'ok', 'app' => 'MudaEasy']));
 
+// DEBUG TEMPORAL
+Route::get('/debug-config', fn() => response()->json([
+    'google_redirect'   => config('services.google.redirect'),
+    'google_client_id'  => substr(config('services.google.client_id') ?? '', 0, 20) . '...',
+    'app_url'           => config('app.url'),
+]));
+
 
 // Auth
 Route::get('/auth/google', [AuthController::class, 'redirect']);
