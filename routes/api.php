@@ -10,11 +10,12 @@ Route::get('/health', fn() => response()->json(['status' => 'ok', 'app' => 'Muda
 
 // DEBUG TEMPORAL
 Route::get('/debug-config', fn() => response()->json([
-    'env_GOOGLE_CLIENT_ID'    => substr(getenv('GOOGLE_CLIENT_ID') ?: '', 0, 15) . '...',
-    'env_APP_URL'             => getenv('APP_URL'),
-    'env_DB_HOST'             => getenv('DB_HOST') ? 'set' : 'empty',
-    'config_google_client_id' => substr(config('services.google.client_id') ?? '', 0, 15) . '...',
-    'config_app_url'          => config('app.url'),
+    'getenv_PORT'             => getenv('PORT') ?: 'EMPTY',
+    'getenv_RAILWAY_ENV'      => getenv('RAILWAY_ENVIRONMENT') ?: 'EMPTY',
+    'getenv_GOOGLE_CLIENT_ID' => getenv('GOOGLE_CLIENT_ID') ? 'SET' : 'EMPTY',
+    'getenv_APP_URL'          => getenv('APP_URL') ?: 'EMPTY',
+    'server_PORT'             => $_SERVER['PORT'] ?? 'not-in-SERVER',
+    'server_GOOGLE_CLIENT_ID' => isset($_SERVER['GOOGLE_CLIENT_ID']) ? 'SET-in-SERVER' : 'not-in-SERVER',
     'dotenv_loaded'           => file_exists(base_path('.env')),
 ]));
 
